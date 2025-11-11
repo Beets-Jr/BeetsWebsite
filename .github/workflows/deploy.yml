@@ -18,11 +18,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.HOSTINGER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ secrets.HOSTINGER_HOST_PORT }} -H ${{ secrets.HOSTINGER_HOST_IP }} >> ~/.ssh/known_hosts
 
       - name: Deploy via SSH
         run: |
-          ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} "
+          ssh -p ${{ secrets.HOSTINGER_HOST_PORT }} ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST_IP }} "
             cd /home/${{ secrets.HOSTINGER_USER }}/meusite &&
             git pull origin prod &&
             npm install &&
