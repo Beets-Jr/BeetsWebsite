@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Posts | Beets Jr.</title>
+
+    <link rel="icon" type="image/svg" href="../assets/logo-sem-fundo.svg">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/admin/gerenciar-posts.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/1rxcnu8a4lkx3xqiaw70k260axg8rayghqoh1k25trpymipr/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="logo">
+                <img src="../assets/logo-sem-fundo.svg" alt="Beets Jr." height="32">
+                <h1>Gerenciar Posts</h1>
+            </div>
+            <nav>
+                <a href="../blog.html" class="btn-secondary">Voltar para o Blog</a>
+                <a href="novo-post.html" class="btn-primary">Novo Post</a>
+            </nav>
+        </header>
+
+        <div id="auth-message" class="hidden">
+            <p>Você não tem permissão para acessar esta página.</p>
+            <a href="../blog.html" class="btn-secondary">Voltar para o Blog</a>
+        </div>
+
+        <div id="posts-list">
+            <div class="loading">Carregando posts...</div>
+        </div>
+
+        <!-- Modal de Edição -->
+        <div id="edit-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Editar Post</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <form id="edit-form">
+                    <div class="form-group">
+                        <label for="edit-titulo">Título do Post*</label>
+                        <input type="text" id="edit-titulo" name="titulo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-autor">Autor*</label>
+                        <input type="text" id="edit-autor" name="autor" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-imagem">Link da Imagem de Capa*</label>
+                        <input type="url" id="edit-imagem" name="imagem" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-conteudo">Conteúdo do Post*</label>
+                        <textarea id="edit-conteudo" name="conteudo"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div id="confirm-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Confirmar Ação</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirm-message">Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="cancel-action">Cancelar</button>
+                    <button class="btn-danger" id="confirm-action">Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Sucesso -->
+        <div id="success-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header success">
+                    <h2>Sucesso!</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="success-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" onclick="closeModal('success-modal')">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Erro -->
+        <div id="error-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header error">
+                    <h2>Erro</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="error-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" onclick="closeModal('error-modal')">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyChSvMOqtRSEliBP_0Q9ZFGgtE84PoQTFA",
+            authDomain: "beets-blog.firebaseapp.com",
+            projectId: "beets-blog",
+            storageBucket: "beets-blog.firebasestorage.app",
+            messagingSenderId: "139716658180",
+            appId: "1:139716658180:web:6e46dc313ece33d2c36151",
+            measurementId: "G-Z7DKLY5VTW"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Elementos do DOM
+        const postsList = document.getElementById('posts-list');
+        const authMessage = document.getElementById('auth-message');
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-form');
+        let currentPostId = null;
+
+        // Funções para manipulação dos modais
+        window.showModal = function(modalId, message = '') {
+            const modal = document.getElementById(modalId);
+            if (message) {
+                const messageEl = document.getElementById(`${modalId.split('-')[0]}-message`);
+                if (messageEl) messageEl.textContent = message;
+            }
+            modal.classList.remove('hidden');
+        };
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        };
+
+        // Função de exclusão atualizada
+        window.deletePost = async function(postId) {
+            let shouldDelete = false;
+            
+            // Configurar handlers do modal de confirmação
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmBtn = document.getElementById('confirm-action');
+            const cancelBtn = document.getElementById('cancel-action');
+            
+            showModal('confirm-modal');
+
+            try {
+                await new Promise((resolve, reject) => {
+                    confirmBtn.onclick = () => {
+                        shouldDelete = true;
+                        closeModal('confirm-modal');
+                        resolve();
+                    };
+                    
+                    cancelBtn.onclick = () => {
+                        closeModal('confirm-modal');
+                        resolve();
+                    };
+
+                    document.querySelectorAll('#confirm-modal .close-modal').forEach(btn => {
+                        btn.onclick = () => {
+                            closeModal('confirm-modal');
+                            resolve();
+                        };
+                    });
+                });
+
+                if (!shouldDelete) return;
+
+                await deleteDoc(doc(db, 'posts', postId));
+                console.log('Post excluído com sucesso:', postId);
+                showModal('success-modal', 'Post excluído com sucesso!');
+                setTimeout(() => {
+                    closeModal('success-modal');
+                    window.location.reload();
+                }, 1500);
+            } catch (error) {
+                console.error('Erro ao excluir post:', error);
+                if (error.code === 'permission-denied') {
+                    showModal('error-modal', 'Permissão negada. Verifique se você está autorizado a excluir posts.');
+                } else {
+                    showModal('error-modal', error.message || 'Erro ao excluir post. Por favor, tente novamente.');
+                }
+            }
+        };
+
+        // Carregar posts
+        async function loadPosts() {
+            try {
+                const q = query(collection(db, 'posts'), orderBy('data', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    postsList.innerHTML = '<p class="no-posts">Nenhum post encontrado.</p>';
+                    return;
+                }
+
+                let postsHTML = '<div class="posts-grid">';
+                querySnapshot.forEach((doc) => {
+                    const post = doc.data();
+                    postsHTML += `
+                        <div class="post-card">
+                            <div class="post-image">
+                                <img src="${post.imagem}" alt="${post.titulo}">
+                            </div>
+                            <div class="post-info">
+                                <h3>${post.titulo}</h3>
+                                <p class="post-meta">
+                                    <span class="post-date">${new Date(post.data).toLocaleDateString('pt-BR')}</span>
+                                    <span class="post-author">Por ${post.autor}</span>
+                                </p>
+                            </div>
+                            <div class="post-actions">
+                                <button onclick="window.location.href='novo-post.html?id=${doc.id}'" class="btn-secondary">Editar</button>
+                                <button onclick="deletePost('${doc.id}')" class="btn-danger">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                postsHTML += '</div>';
+                postsList.innerHTML = postsHTML;
+            } catch (error) {
+                console.error('Erro ao carregar posts:', error);
+                postsList.innerHTML = '<p class="error">Erro ao carregar posts. Por favor, tente novamente.</p>';
+            }
+        }
+
+        // Configurar TinyMCE
+        tinymce.init({
+            selector: '#edit-conteudo',
+            height: 400,
+            menubar: true,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+            content_style: 'body { font-family: "Roboto", sans-serif; line-height: 1.8; font-size: 16px; }',
+        });
+
+        // Funções de edição e exclusão
+        window.editPost = async function(postId) {
+            try {
+                const docRef = doc(db, 'posts', postId);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const post = docSnap.data();
+                    currentPostId = postId;
+                    
+                    document.getElementById('edit-titulo').value = post.titulo;
+                    document.getElementById('edit-autor').value = post.autor;
+                    document.getElementById('edit-imagem').value = post.imagem;
+                    tinymce.get('edit-conteudo').setContent(post.conteudo);
+                    
+                    editModal.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar post para edição:', error);
+                alert('Erro ao carregar post para edição. Por favor, tente novamente.');
+            }
+        };
+
+        // Event Listeners
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
+
+            try {
+                const postData = {
+                    titulo: document.getElementById('edit-titulo').value.trim(),
+                    autor: document.getElementById('edit-autor').value.trim(),
+                    imagem: document.getElementById('edit-imagem').value.trim(),
+                    conteudo: tinymce.get('edit-conteudo').getContent(),
+                    dataAtualizacao: new Date().toISOString()
+                };
+
+                await updateDoc(doc(db, 'posts', currentPostId), postData);
+                editModal.classList.add('hidden');
+                showModal('success-modal', 'Post atualizado com sucesso!');
+                setTimeout(() => {
+                    closeModal('success-modal');
+                    loadPosts();
+                }, 1500);
+            } catch (error) {
+                console.error('Erro ao atualizar post:', error);
+                showModal('error-modal', error.message || 'Erro ao atualizar post. Por favor, tente novamente.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Alterações';
+            }
+        });
+
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', () => {
+                editModal.classList.add('hidden');
+            });
+        });
+
+    loadPosts();
+            
+    </script>
+</body>
+</html> 

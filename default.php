@@ -149,7 +149,7 @@
                         id="image0_793_7454" 
                         width="2320"
                         height="2296"
-                        href="https://cdn.hostinger.com/hostinger_welcome/v2/man1.png"
+                        href="https://assets.hostinger.com/content/hostinger_welcome/v2/man1.png"
                     />
                 </defs>
             </svg>

@@ -1,44 +1,42 @@
 #contato {
+    padding: 2rem 8rem;
     color: var(--cinza-claro);
     width: 100%;
     padding: 1rem 1rem;
 }
 
+.contato-whatsapp-link {
+    text-decoration: none;
+}
+
 .contato-bg {
+    background-color: var(--beterraba-media);
+    border-radius: 0.7rem;
+    padding: 3rem 7rem;
     display: flex;
     justify-content: space-around;
+
 }
 
 .contato-parte1 {
-    width: 100%;
-    background-color: var(--beterraba-media);
-    margin-top: 20px;
-    border-radius: 10px 0px 0px 10px;
-    padding: 5rem 1rem 3rem 6rem;
+    width: 50%;
+    align-self: center;
 }
 
 #contato h2 {
-    padding-bottom: 3rem;
-    padding-top: 2rem;
     color: white;
-    font-size: 72px;
-    font-weight: 200;
-}
-
-#contato h3 {
-    font-weight: 600;
+    margin-bottom: 3rem;
+    font-size: 48px;
 }
 
 #contato p {
     font-weight: 90;
-    font-size: 18px;
 }
 
 .contato-subtitulo {
     font-weight: 90;
     margin-top: 1rem;
     margin-bottom: 2rem;
-    width: 80%;
 }
 
 .contato-subtitulo p {
@@ -73,60 +71,31 @@
     align-items: center;
     justify-content: space-between;
     gap: 50px;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    padding-left: 10px;
 }
 
 .contato-logo {
     width: 40px;
     height: 40px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: grayscale(100%) brightness(1);
 }
 
-.contato-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--verde);
-    border-radius: 50px;
-    padding: 12px 35px;
-    gap: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    color: white;
-    transition: 250ms linear;
-
-    cursor: pointer;
-    border-radius: 10px;
-    font-weight: 300;
-    margin-bottom: 3rem;
+.contato-logo:hover {
+    transform: scale(1.15);
+    filter: grayscale(0%) brightness(1.2) hue-rotate(-10deg);
 }
 
-.contato-whatsapp {
-    width: 24px;
-    height: 24px;
-    background-image: url('../../assets/whatsapp.svg');
-    background-size: cover;
-    display: block;
-    transition: 250ms linear;
-}
-
-.contato-btn:hover {
-    background: white;
-    color: var(--beterraba-media);
-    transition: 250ms linear;
-}
-
-.contato-btn:hover .contato-whatsapp {
-    background-image: url('../../assets/whatsapp-beterraba.svg');
-    transition: 250ms linear;
-}
-
-/* pt2 - formulário */
+/* pt2 */
 .contato-parte2 {
     background-color: var(--verde);
-    width: 90%;
-    margin-top: 20px;
-    border-radius: 0px 10px 10px 0px;
-    padding: 3rem 1rem;
+    width: 33%;
+    height: 530px;
+    margin-top: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
 }
 
 .formurario-titulo {
@@ -135,24 +104,18 @@
 }
 
 .formurario-titulo h3 {
-    font-size: 24px;
-    color: black;
-    font-weight: 400;
+    font-size: 20px;
     margin-left: 10px;
     margin-top: 10px;
-    margin-bottom: 20px;
 }
 
 .formulario {
-    margin: 0 70px;
-    background-color: white;
+    margin: 0 85px;
     color: var(--cinza-escuro);
-    padding: 3rem 4rem;
 }
 
 .formulario label {
     font-size: 18px;
-    font-weight: 200;
 }
 
 .formulario input,
@@ -160,11 +123,9 @@
     padding: 10px;
     width: 100%;
     height: 40px;
+    border-radius: 3px;
     margin-bottom: 15px;
-    border: 0.5px solid var(--cinza-escuro);
-
-    font-size: 16px;
-    font-family: Poppins;
+    background-color: var(--verde-claro);
 }
 
 .contato-mensagem {
@@ -172,25 +133,23 @@
 }
 
 .contato-enviar {
-    text-align: left;
+    text-align: center;
 }
 
 .enviar-btn {
     font-size: 1rem;
-    font-family: Poppins;
-    width: 10rem;
+    font-family: 'Poppins', sans-serif;
+    width: 60%;
     height: 45px;
-    border-radius: 10px;
-    font-weight: 300;
+    border-radius: 20px;
+    font-weight: 700;
     cursor: pointer;
-    background-color: var(--beterraba-media);
-    color: white;
 }
 
 .enviar-btn:hover {
     color: white;
-    font-weight: 600;
-    background: var(--verde);
+    background: var(--beterraba-media);
+    transition: 250ms linear;
 }
 
 /* mobile */
@@ -208,8 +167,15 @@
         border-radius: 0;
     }
 
-    .contatos-img, .contato-btn {
+    .contatos-img {
         display: none;
+    }
+
+    .contato-btn {
+        display: flex;
+        justify-content: center;
+        width: 80%;
+        margin: 1rem auto;
     }
 
     .contato-formasdecontato {
@@ -284,5 +250,9 @@
 @media only screen and (max-width: 500px) {
     .contato-parte2{
         width: 90%;
+    }
+
+    .contato-whatsapp {
+        display: none;
     }
 }

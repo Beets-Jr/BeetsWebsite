@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post | Beets Jr.</title>
+
+    <link rel="icon" type="image/svg" href="./assets/logo-sem-fundo.svg">
+    <link rel="stylesheet" href="./styles/global.css">
+    <link rel="stylesheet" href="./styles/header.css">
+    <link rel="stylesheet" href="./styles/footer.css">
+    <link rel="stylesheet" href="./styles/blog/post.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Script para o menu mobile -->
+    <script src="./scripts/menu.js" defer></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div id="logo">
+            <div>
+                <img src="./assets/logo-sem-fundo.svg" alt="Beets Jr." height="32">
+            </div>
+            <div>
+                <a href="./index.html">
+                    <h1>Beets Jr.</h1>
+                </a>
+            </div>
+        </div>
+
+        <div class="hamburger">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+
+        <nav class="menu">
+            <ul>
+                <li><a href="./index.html">Home</a></li>
+                <li><a href="./blog.html">Blog</a>
+                    <div class="menu-line"></div>
+                </li>
+                <li><a href="./quemSomos.html">Quem Somos</a></li>
+                <li><a href="./politicaDePrivacidade.html">Política de Privacidade</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Conteúdo do Post -->
+    <main class="post-container">
+        <div id="post-content">
+            <div class="loading">Carregando post...</div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <nav id="menu-footer">
+            <h3>Links rápidos</h3>
+            <ul>
+                <li><a href="./index.html">Home</a></li>
+                <li><a href="./quemSomos.html">Quem Somos</a></li>
+                <li><a href="./politicaDePrivacidade.html">Política de Privacidade</a></li>
+            </ul>
+
+            <hr class="linha-customizada">
+            <p>Website desenvolvido por Beets Jr.</p>
+        </nav>
+
+        <div id="logo-footer">
+            <div id="logo">
+                <div>
+                    <img src="./assets/logo-cores-invertida.svg" alt="Beets Jr" height="120">
+                </div>
+
+                <div>
+                    <a href="./index.html">
+                        <h2>Beets Jr.</h2>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="contatos-footer">
+            <h3>Informações de contato</h3>
+            <p>contato@beetsjr.com.br</p>
+            <p>Sorocaba - SP</p>
+            <div id="redes-sociais-footer">
+                <a href="https://www.instagram.com/beetsjr/" target="_blank">
+                    <img src="./assets/instagram.svg" alt="Instagram" height="30">
+                </a>
+
+                <a href="https://www.facebook.com/beetsjr" target="_blank">
+                    <img src="./assets/facebook.svg" alt="Facebook" height="30">
+                </a>
+
+                <a href="https://www.linkedin.com/company/beets-jr/" target="_blank">
+                    <img src="./assets/linkedin.svg" alt="Linkedin" height="30">
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyChSvMOqtRSEliBP_0Q9ZFGgtE84PoQTFA",
+            authDomain: "beets-blog.firebaseapp.com",
+            projectId: "beets-blog",
+            storageBucket: "beets-blog.firebasestorage.app",
+            messagingSenderId: "139716658180",
+            appId: "1:139716658180:web:6e46dc313ece33d2c36151",
+            measurementId: "G-Z7DKLY5VTW"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Função para obter o ID do post da URL
+        function getPostId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Função para carregar o post
+        async function loadPost() {
+            const postId = getPostId();
+            if (!postId) {
+                document.getElementById('post-content').innerHTML = 
+                    '<div class="error">Post não encontrado. <a href="./blog.html">Voltar para o Blog</a></div>';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, 'posts', postId);
+                const docSnap = await getDoc(docRef);
+                
+                if (!docSnap.exists()) {
+                    document.getElementById('post-content').innerHTML = 
+                        '<div class="error">Post não encontrado. <a href="./blog.html">Voltar para o Blog</a></div>';
+                    return;
+                }
+
+                const post = docSnap.data();
+                displayPost(post);
+            } catch (error) {
+                console.error("Erro ao carregar post:", error);
+                document.getElementById('post-content').innerHTML = 
+                    '<div class="error">Erro ao carregar o post. Por favor, tente novamente mais tarde. <a href="./blog.html">Voltar para o Blog</a></div>';
+            }
+        }
+
+        // Função para exibir o post
+        function displayPost(post) {
+            const postContent = document.getElementById('post-content');
+            
+            postContent.innerHTML = `
+                <article class="post">
+                    <div class="post-header">
+                        <h1>${post.titulo}</h1>
+                        <div class="post-meta">
+                            <span class="post-date">${new Date(post.data).toLocaleDateString('pt-BR')}</span>
+                            <span class="post-author">Por ${post.autor}</span>
+                        </div>
+                    </div>
+
+                    <div class="post-featured-image">
+                        <img src="${post.imagem}" alt="${post.titulo}">
+                    </div>
+
+                    <div class="post-body">
+                        ${post.conteudo}
+                    </div>
+
+                    <div class="post-footer">
+                        <a href="./blog.html" class="back-to-blog">Voltar para o Blog</a>
+                    </div>
+                </article>
+            `;
+        }
+
+        // Carregar post quando a página carregar
+        document.addEventListener('DOMContentLoaded', loadPost);
+    </script>
+</body>
+</html> 

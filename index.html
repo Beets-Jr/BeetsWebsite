@@ -2,6 +2,17 @@
 <html lang="pt-br">
 
 <head>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-970RRKLYZR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-970RRKLYZR');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home | Beets Jr.</title>
@@ -20,9 +31,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
+     
     <!-- Conteúdo do Header | Home-->
 
     <header>
@@ -50,6 +63,7 @@
                     <div class="menu-line"></div>
                 </li>
                 <li><a href="./quemSomos.html">Quem Somos</a></li>
+                <li><a href="./blog.html">Blog</a></li>
                 <li><a href="./politicaDePrivacidade.html">Política de Privacidade</a></li>
             </ul>
         </nav>
@@ -68,7 +82,7 @@
                 </p>
 
                 <div class="botao-hero">
-                    <a href="#servicos">O que fazemos?</a>
+                    <a href="#contato">Entre em Contato</a>
                 </div>
             </div>
 
@@ -87,11 +101,10 @@
             <div class="servicos-menores">
 
                 <div class="card-produto">
-                    <h2>Website</h2>
+                    <h2><strong>Sites</strong> e <strong>landing pages</strong> para sua empresa</h2>
 
-                    <p>Já pensou em ter um espaço personalizado para apresentar seu negócio? Um site, 
-                        bem estruturado é a chave para oferecer uma experiência incrível aos seus clientes, 
-                        exibir informações com imagens, textos e conteúdos do seu jeito e se destacar da concorrência.
+                    <p><strong style="color: var(--verde);">Tenha uma presença online impactante!</strong> Criamos sites e landing pages personalizadas para apresentar sua marca, com design atraente, 
+                    conteúdos estratégicos e navegação intuitiva. Mostre o melhor do seu negócio e conquiste seu público alvo com uma experiência única.
                     </p>
 
                     <div class="botao-card-produto">
@@ -100,11 +113,12 @@
                 </div>
 
                 <div class="card-produto">
-                    <h2>Aplicações Web</h2>
+                    <h2><strong>Sistemas</strong> para o seu negócio</h2>
                     
-                    <p>Transforme seu negócio com uma Aplicação Web personalizada! Crie uma solução digital que atenda às necessidades específicas da sua empresa. 
-                        Imagine um sistema de agendamento de consultas online, um sistema de feedback dos clientes personalizado ou qualquer outra solução que você precise. 
-                        Vamos transformar suas ideias em realidade.
+                    <p><strong style="color: var(--verde);">Potencialize o desempenho da sua empresa com sistemas personalizados! </strong>
+                    Desenvolvemos soluções digitais para atender às necessidades do seu negócio, como sistemas de agendamento online, 
+                    ferramentas de feedback personalizadas ou qualquer outro sistema que otimize seus processos.
+                    Transforme sua visão em realidade com a gente.
                     </p>
 
                     <div class="botao-card-produto">
@@ -112,13 +126,14 @@
                     </div>
                 </div>
             </div>
+            
             <div class="servicos-menores">
                 
                 <div class="card-produto">
-                    <h2>Prototipação</h2>
+                    <h2><strong style="color: var(--verde);">Prototipação</strong></h2>
                     
-                    <p>Visualize sua ideia antes de construir! Crie um protótipo interativo do seu site ou app e veja como ele funciona na prática. 
-                        Teste a usabilidade e a interface do seu produto antes do lançamento.
+                    <p><strong style="color: var(--beterraba-media);">Visualize sua ideia antes de construir!</strong> Crie um protótipo interativo do seu site ou sistema e veja como ele funciona na prática. 
+                    Teste a usabilidade e a interface do seu produto antes do lançamento.
                     </p>
 
                     <div class="botao-card-produto">
@@ -127,9 +142,37 @@
                 </div>
 
                 <div class="img-produto">
-                    <img src="./assets/hero-img.svg" alt="Devs trabalhando" height="330">
+                    <img src="./assets/img-produtos.png" alt="projetos" height="380px">
                 </div>
 
+            </div>
+            
+            <div class="servicos-menores">
+
+                <div class="card-produto">
+                    <h2><strong>Hospedagem</strong> e <strong>Manutenção</strong></h2>
+
+                    <p><strong style="color: var(--verde);">Garanta tranquilidade para a sua presença online!</strong> 
+                    Oferecemos suporte completo com auxílio na escolha do pacote ideal, acompanhamento contínuo para que seu site permaneça sempre no ar, e manutenção da hospedagem e do domínio. 
+                    Deixe a parte técnica com a gente e foque no que realmente importa: o sucesso da sua empresa.
+                    </p>
+
+                    <div class="botao-card-produto">
+                        <a href="#contato">Saiba mais</a>
+                    </div>
+                </div>
+
+                <div class="card-produto">
+                    <h2><strong>Automações</strong></h2>
+                    
+                    <p><strong style="color: var(--verde);">Transforme seus processos com automações inteligentes!</strong> 
+                    Simplifique tarefas administrativas, otimize fluxos de trabalho e integre sistemas com soluções personalizadas, proporcionando agilidade e eficiência para o seu negócio.
+                    </p>
+
+                    <div class="botao-card-produto">
+                        <a href="#contato">Saiba mais</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -296,25 +339,19 @@
                     </div>
                     <div class="contato-social">
                         <a href="https://www.instagram.com/beetsjr/" target="_blank">
-                            <img src="./assets/skill-icons_instagram.svg" alt="Instagram" class="contato-logo">
+                            <img src="./assets/instagram-cinzaclaro.svg" alt="Instagram" class="contato-logo">
                         </a>
 
                         <a href="https://www.facebook.com/beetsjr" target="_blank">
-                            <img src="./assets/devicon_facebook.svg" alt="Facebook" class="contato-logo">
+                            <img src="./assets/facebook-cinzaclaro.svg" alt="Facebook" class="contato-logo">
                         </a>
 
                         <a href="https://www.linkedin.com/company/beets-jr/" target="_blank">
-                            <img src="./assets/devicon_linkedin.svg" alt="Linkedin" class="contato-logo">
+                            <img src="./assets/linkedin-cinzaclaro.svg" alt="Linkedin" class="contato-logo">
                         </a>
                     </div>
                 </div>
                 <br>
-                <a href="https://wa.me/5511968189449" target="_blank">
-                    <div class="contato-btn">
-                        <div class="contato-whatsapp"></div>
-                        <p>Fale conosco</p>
-                    </div>
-                </a>
             </div>
             <div class="contato-parte2">
                 <div class="formurario-titulo">
@@ -345,6 +382,15 @@
             </div>
         </div>
     </section>
+
+    <!-- Contato Whatsapp -->
+
+    <a href="https://wa.me/5515991354336" target="_blank" class="whatsapp-fixo">
+        <div class="contato-btn">
+            <div class="contato-whatsapp"></div>
+            <p>Entre em Contato</p>
+        </div>
+    </a>
 
     <!-- Conteúdo do Footer -->
 

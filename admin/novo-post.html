@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Post | Beets Jr.</title>
+
+    <link rel="icon" type="image/svg" href="../assets/logo-sem-fundo.svg">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/admin/novo-post.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/1rxcnu8a4lkx3xqiaw70k260axg8rayghqoh1k25trpymipr/tinymce/7/tinymce.min.js"
+        referrerpolicy="origin"></script>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="logo">
+                <img src="../assets/logo-sem-fundo.svg" alt="Beets Jr." height="32">
+                <h1>Criar Novo Post</h1>
+            </div>
+            <nav>
+                <a href="../blog.html" class="btn-secondary">Voltar para o Blog</a>
+            </nav>
+        </header>
+
+        <div id="auth-message" class="hidden">
+            <p>Você não tem permissão para acessar esta página.</p>
+            <a href="../blog.html" class="btn-secondary">Voltar para o Blog</a>
+        </div>
+
+        <div id="post-form">
+            <form id="new-post-form">
+                <div class="form-group">
+                    <label for="titulo">Título do Post*</label>
+                    <input type="text" id="titulo" name="titulo" required
+                        placeholder="Digite um título atrativo para o post">
+                </div>
+
+                <div class="form-group">
+                    <label for="autor">Autor*</label>
+                    <input type="text" id="autor" name="autor" required placeholder="Nome do autor do post">
+                </div>
+
+                <div class="form-group">
+                    <label for="imagem">Link da Imagem de Capa*</label>
+                    <input type="url" id="imagem" name="imagem" required
+                        placeholder="Cole aqui o link da imagem de capa">
+                    <small>Dica: Use uma imagem no formato 16:9 para melhor visualização</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo do Post*</label>
+                    <textarea id="conteudo" name="conteudo"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary"
+                        onclick="window.location.href='../blog.html'">Cancelar</button>
+                    <button type="submit" class="btn-primary">Publicar Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyChSvMOqtRSEliBP_0Q9ZFGgtE84PoQTFA",
+            authDomain: "beets-blog.firebaseapp.com",
+            projectId: "beets-blog",
+            storageBucket: "beets-blog.firebasestorage.app",
+            messagingSenderId: "139716658180",
+            appId: "1:139716658180:web:6e46dc313ece33d2c36151",
+            measurementId: "G-Z7DKLY5VTW"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Elementos do DOM
+        const postForm = document.getElementById('post-form');
+        const authMessage = document.getElementById('auth-message');
+        const formTitle = document.querySelector('.admin-header h1');
+        const submitButton = document.querySelector('button[type="submit"]');
+        let editingPostId = null;
+
+        // Função para obter ID do post da URL
+        function getPostId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Carregar post para edição
+        async function loadPostForEdit() {
+            const postId = getPostId();
+            if (!postId) return;
+
+            try {
+                const docRef = doc(db, 'posts', postId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const post = docSnap.data();
+                    editingPostId = postId;
+
+                    document.getElementById('titulo').value = post.titulo;
+                    document.getElementById('autor').value = post.autor;
+                    document.getElementById('imagem').value = post.imagem;
+
+                    // Aguardar o TinyMCE inicializar
+                    tinymce.get('conteudo').setContent(post.conteudo);
+
+                    // Atualizar interface
+                    formTitle.textContent = 'Editar Post';
+                    submitButton.textContent = 'Salvar Alterações';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar post:', error);
+                alert('Erro ao carregar post para edição');
+            }
+        }
+
+        // Configuração do TinyMCE
+        tinymce.init({
+            selector: '#conteudo',
+            height: 500,
+            menubar: true,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+            content_style: `
+                body {
+                    font-family: 'Roboto', sans-serif;
+                    line-height: 1.8;
+                    font-size: 16px;
+                    color: #333;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 1rem;
+                }
+                h1, h2, h3, h4, h5, h6 { 
+                    font-family: 'Poppins', sans-serif;
+                    color: var(--beterraba-escura);
+                    margin: 1.5rem 0 1rem;
+                }
+                p { margin-bottom: 1.5rem; }
+                img { 
+                    max-width: 100%; 
+                    height: auto; 
+                    border-radius: 5px;
+                    margin: 1rem auto;
+                    display: block;
+                }
+            `,
+            formats: {
+                // Limitar formatações permitidas
+                bold: { inline: 'strong' },
+                italic: { inline: 'em' },
+                underline: { inline: 'u' },
+                p: { block: 'p' },
+                h1: { block: 'h1' },
+                h2: { block: 'h2' },
+                h3: { block: 'h3' }
+            },
+            valid_elements: 'p,strong,em,u,h1,h2,h3,a[href],ul,ol,li,img[src|alt],blockquote,code,pre',
+            valid_children: '+body[p|h1|h2|h3|ul|ol|blockquote]',
+            language: 'pt_BR',
+            language_url: 'https://cdn.tiny.cloud/1/no-api-key/tinymce/6/langs/pt_BR.js'
+        });
+
+        // Submissão do formulário
+        document.getElementById('new-post-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            submitButton.disabled = true;
+            submitButton.textContent = editingPostId ? 'Salvando...' : 'Publicando...';
+
+            try {
+                let isAuthenticated = false;
+                try {
+                    await signInAnonymously(auth);
+                    isAuthenticated = true;
+                } catch (authError) {
+                    console.error('Erro na autenticação anônima:', authError);
+                    isAuthenticated = window.location.hostname === 'localhost' ||
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname === '::1';
+                }
+
+                if (!isAuthenticated) {
+                    throw new Error('Não foi possível autenticar. Por favor, tente novamente.');
+                }
+
+                const rawContent = tinymce.get('conteudo').getContent();
+                const cleanContent = rawContent
+                    .replace(/<p[^>]*>/g, '<p>')
+                    .replace(/<span[^>]*>/g, '')
+                    .replace(/<\/span>/g, '');
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = cleanContent;
+                const textContent = tempDiv.textContent || tempDiv.innerText;
+                const preview = textContent.substring(0, 150) + '...';
+
+                const postData = {
+                    titulo: document.getElementById('titulo').value.trim(),
+                    autor: document.getElementById('autor').value.trim(),
+                    imagem: document.getElementById('imagem').value.trim(),
+                    conteudo: cleanContent,
+                    preview: preview,
+                    dataAtualizacao: new Date().toISOString()
+                };
+
+                // Validações
+                if (!postData.titulo || postData.titulo.length < 3) {
+                    throw new Error('O título deve ter pelo menos 3 caracteres');
+                }
+
+                if (!postData.autor || postData.autor.length < 2) {
+                    throw new Error('O nome do autor deve ter pelo menos 2 caracteres');
+                }
+
+                if (!postData.imagem.startsWith('http')) {
+                    throw new Error('O link da imagem deve começar com http:// ou https://');
+                }
+
+                if (textContent.length < 100) {
+                    throw new Error('O conteúdo do post deve ter pelo menos 100 caracteres');
+                }
+
+                if (editingPostId) {
+                    // Atualizar post existente
+                    await updateDoc(doc(db, 'posts', editingPostId), postData);
+                    alert('Post atualizado com sucesso!');
+                } else {
+                    // Criar novo post
+                    postData.data = postData.dataAtualizacao; // Apenas para novos posts
+                    await addDoc(collection(db, 'posts'), postData);
+                    alert('Post publicado com sucesso!');
+                }
+
+                window.location.href = '../blog.html';
+            } catch (error) {
+                console.error('Erro ao salvar post:', error);
+                alert(error.message || 'Erro ao salvar post. Por favor, tente novamente.');
+                submitButton.disabled = false;
+                submitButton.textContent = editingPostId ? 'Salvar Alterações' : 'Publicar Post';
+            }
+        });
+
+        loadPostForEdit();
+    </script>
+</body>
+
+</html>

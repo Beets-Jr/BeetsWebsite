@@ -53,9 +53,9 @@
 
     cursor: pointer;
     border-radius: 10px;
-    border: 1px solid var(--verde-escuro);
-    background: white;
-    font-weight: 200;
+    background-color: var(--verde);
+    font-weight: 400;
+    border:none;
 }
 
 .botao-card-produto a{
@@ -64,9 +64,9 @@
 }
 
 .botao-card-produto:hover {
-    background-color: var(--verde);
-    font-weight: 400;
-    border:none;
+    border: 1px solid var(--verde-escuro);
+    background: white;
+    font-weight: 200;
 }
 
 @media only screen and (max-width: 1024px) {

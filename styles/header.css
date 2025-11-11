@@ -4,7 +4,7 @@ header {
     justify-content: space-between;
     height: 5rem;
     width: 100%;
-    padding: 3rem 8rem;
+    padding: 2rem 8rem;
     position: fixed;
     top: 0;
     background-color: white;
@@ -104,7 +104,7 @@ header nav a.active {
         
     .menu{
         position: absolute;
-        top: 62px;
+        top: 50px;
         left: 0;
         right: 0;
         height: 0px;

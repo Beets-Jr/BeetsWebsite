@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Blog | Beets Jr.</title>
+
+    <link rel="icon" type="image/svg" href="../assets/logo-sem-fundo.svg">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/admin/blog.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-storage-compat.js"></script>
+
+    <!-- TinyMCE Editor -->
+    <script src="https://cdn.tiny.cloud/1/SUA_CHAVE_AQUI/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="logo">
+                <img src="../assets/logo-sem-fundo.svg" alt="Beets Jr." height="32">
+                <h1>Admin Blog</h1>
+            </div>
+            <nav>
+                <button id="logout-btn" class="btn-secondary">Sair</button>
+            </nav>
+        </header>
+
+        <!-- Login Form -->
+        <div id="login-form" class="auth-form">
+            <h2>Login</h2>
+            <form id="login">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+
+        <!-- Blog Management -->
+        <div id="blog-management" class="hidden">
+            <div class="actions">
+                <button id="new-post-btn" class="btn-primary">Novo Post</button>
+            </div>
+
+            <div id="posts-list">
+                <h2>Posts</h2>
+                <div class="posts-grid">
+                    <!-- Posts serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Post Form -->
+            <div id="post-form" class="hidden">
+                <h2 id="form-title">Novo Post</h2>
+                <form id="post">
+                    <div class="form-group">
+                        <label for="post-title">Título</label>
+                        <input type="text" id="post-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="post-image">Imagem de Capa</label>
+                        <input type="file" id="post-image" accept="image/*" required>
+                        <div id="image-preview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="post-content">Conteúdo</label>
+                        <textarea id="post-content"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-post" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Publicar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            // As configurações serão preenchidas posteriormente
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Configuração do TinyMCE
+        tinymce.init({
+            selector: '#post-content',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+            height: 500
+        });
+
+        // Estado da aplicação
+        let currentUser = null;
+        let editingPostId = null;
+
+        // Elementos DOM
+        const loginForm = document.getElementById('login-form');
+        const blogManagement = document.getElementById('blog-management');
+        const postForm = document.getElementById('post-form');
+        const postsGrid = document.querySelector('.posts-grid');
+
+        // Event Listeners
+        document.getElementById('login').addEventListener('submit', handleLogin);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.getElementById('new-post-btn').addEventListener('click', showNewPostForm);
+        document.getElementById('post').addEventListener('submit', handlePostSubmit);
+        document.getElementById('cancel-post').addEventListener('click', hidePostForm);
+        document.getElementById('post-image').addEventListener('change', handleImagePreview);
+
+        // Funções de Autenticação
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                alert('Erro ao fazer login: ' + error.message);
+            }
+        }
+
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        // Observer de Auth
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) {
+                loginForm.classList.add('hidden');
+                blogManagement.classList.remove('hidden');
+                loadPosts();
+            } else {
+                loginForm.classList.remove('hidden');
+                blogManagement.classList.add('hidden');
+                postForm.classList.add('hidden');
+            }
+        });
+
+        // Funções de Gerenciamento de Posts
+        async function loadPosts() {
+            try {
+                const snapshot = await db.collection('posts').orderBy('data', 'desc').get();
+                postsGrid.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    const postElement = createPostElement(doc.id, post);
+                    postsGrid.appendChild(postElement);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar posts:', error);
+                alert('Erro ao carregar posts');
+            }
+        }
+
+        function createPostElement(id, post) {
+            const div = document.createElement('div');
+            div.className = 'post-card';
+            div.innerHTML = `
+                <img src="${post.imagem}" alt="${post.titulo}">
+                <div class="post-info">
+                    <h3>${post.titulo}</h3>
+                    <p>${new Date(post.data).toLocaleDateString('pt-BR')}</p>
+                </div>
+                <div class="post-actions">
+                    <button onclick="editPost('${id}')" class="btn-secondary">Editar</button>
+                    <button onclick="deletePost('${id}')" class="btn-danger">Excluir</button>
+                </div>
+            `;
+            return div;
+        }
+
+        function showNewPostForm() {
+            editingPostId = null;
+            document.getElementById('form-title').textContent = 'Novo Post';
+            document.getElementById('post').reset();
+            document.getElementById('image-preview').innerHTML = '';
+            tinymce.get('post-content').setContent('');
+            postForm.classList.remove('hidden');
+        }
+
+        function hidePostForm() {
+            postForm.classList.add('hidden');
+            editingPostId = null;
+        }
+
+        async function handlePostSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const imageFile = document.getElementById('post-image').files[0];
+            const content = tinymce.get('post-content').getContent();
+
+            try {
+                let imageUrl = '';
+                if (imageFile) {
+                    const imageRef = storage.ref(`blog/${Date.now()}_${imageFile.name}`);
+                    await imageRef.put(imageFile);
+                    imageUrl = await imageRef.getDownloadURL();
+                }
+
+                const postData = {
+                    titulo: title,
+                    conteudo: content,
+                    imagem: imageUrl,
+                    autor: currentUser.email,
+                    data: new Date().toISOString()
+                };
+
+                if (editingPostId) {
+                    await db.collection('posts').doc(editingPostId).update(postData);
+                } else {
+                    await db.collection('posts').add(postData);
+                }
+
+                hidePostForm();
+                loadPosts();
+            } catch (error) {
+                console.error('Erro ao salvar post:', error);
+                alert('Erro ao salvar post');
+            }
+        }
+
+        async function editPost(id) {
+            try {
+                const doc = await db.collection('posts').doc(id).get();
+                if (!doc.exists) return;
+
+                const post = doc.data();
+                editingPostId = id;
+                document.getElementById('form-title').textContent = 'Editar Post';
+                document.getElementById('post-title').value = post.titulo;
+                tinymce.get('post-content').setContent(post.conteudo);
+                
+                if (post.imagem) {
+                    document.getElementById('image-preview').innerHTML = `
+                        <img src="${post.imagem}" alt="Preview">
+                    `;
+                }
+
+                postForm.classList.remove('hidden');
+            } catch (error) {
+                console.error('Erro ao carregar post:', error);
+                alert('Erro ao carregar post para edição');
+            }
+        }
+
+        async function deletePost(id) {
+            if (!confirm('Tem certeza que deseja excluir este post?')) return;
+
+            try {
+                await db.collection('posts').doc(id).delete();
+                loadPosts();
+            } catch (error) {
+                console.error('Erro ao excluir post:', error);
+                alert('Erro ao excluir post');
+            }
+        }
+
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('image-preview').innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                `;
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html> 

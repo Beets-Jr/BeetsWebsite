@@ -1,0 +1,235 @@
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--beterraba-escura);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Auth Form */
+.auth-form {
+    max-width: 400px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--beterraba-escura);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: 'Roboto', sans-serif;
+    color: var(--texto);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--verde);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--verde);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--verde-escuro);
+}
+
+.btn-secondary {
+    background-color: var(--beterraba-clara);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: auto; /* Added to stick to the bottom */
+}
+
+.btn-secondary:hover {
+    background-color: var(--beterraba-media);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    margin-top: auto; /* Added to stick to the bottom */
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Blog Management */
+.actions {
+    margin-bottom: 2rem;
+}
+
+#posts-list h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--beterraba-escura);
+    margin-bottom: 1.5rem;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.post-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column; /* Added to enable flex properties */
+}
+
+.post-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.post-info {
+    padding: 1rem;
+    flex-grow: 1; /* Added to push buttons to the bottom */
+}
+
+.post-info h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--beterraba-escura);
+    margin-bottom: 0.5rem;
+}
+
+.post-info p {
+    font-family: 'Roboto', sans-serif;
+    color: var(--texto-claro);
+    font-size: 0.9rem;
+}
+
+.post-actions {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: auto; /* Added to stick to the bottom */
+}
+
+/* Post Form */
+#post-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+#post-form h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--beterraba-escura);
+    margin-bottom: 2rem;
+}
+
+#image-preview {
+    margin-top: 1rem;
+}
+
+#image-preview img {
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 5px;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 1rem;
+    }
+
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .post-actions {
+        flex-direction: column;
+    }
+
+    .post-actions button {
+        width: 100%;
+    }
+} 
+
