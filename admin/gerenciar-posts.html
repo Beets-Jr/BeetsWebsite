@@ -128,17 +128,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyChSvMOqtRSEliBP_0Q9ZFGgtE84PoQTFA",
-            authDomain: "beets-blog.firebaseapp.com",
-            projectId: "beets-blog",
-            storageBucket: "beets-blog.firebasestorage.app",
-            messagingSenderId: "139716658180",
-            appId: "1:139716658180:web:6e46dc313ece33d2c36151",
-            measurementId: "G-Z7DKLY5VTW"
-        };
+        import { firebaseConfig } from "../firebaseConfig.js";
 
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
