@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+name: Deploy to Hostinger (Landing Page)
 
 on:
   push:
@@ -13,6 +13,20 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Criar firebaseConfig.js dinamicamente
+        run: |
+          cat > ./firebaseConfig.js <<EOF
+          export const firebaseConfig = {
+            apiKey: "${{ secrets.FIREBASE_API_KEY }}",
+            authDomain: "${{ secrets.FIREBASE_AUTH_DOMAIN }}",
+            projectId: "${{ secrets.FIREBASE_PROJECT_ID }}",
+            storageBucket: "${{ secrets.FIREBASE_STORAGE_BUCKET }}",
+            messagingSenderId: "${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}",
+            appId: "${{ secrets.FIREBASE_APP_ID }}",
+            measurementId: "${{ secrets.FIREBASE_MEASUREMENT_ID }}"
+          };
+          EOF
+
       - name: Configurar chave SSH
         run: |
           mkdir -p ~/.ssh
@@ -20,11 +34,6 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ secrets.HOSTINGER_HOST_PORT }} -H ${{ secrets.HOSTINGER_HOST_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
+      - name: Deploy para Hostinger via rsync
         run: |
-          ssh -p ${{ secrets.HOSTINGER_HOST_PORT }} ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST_IP }} "
-            cd /home/${{ secrets.HOSTINGER_USER }}/meusite &&
-            git pull origin prod &&
-            npm install &&
-            npm run build
-          "
+          rsync -avz --delete -e "ssh -p ${{ secrets.HOSTINGER_HOST_PORT }}" ./ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST_IP }}:/home/${{ secrets.HOSTINGER_USER }}/public_html/
