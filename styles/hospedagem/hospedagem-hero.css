@@ -9,10 +9,9 @@
     align-content: space-between;
     justify-content: space-between; /* alinha os conteúdo aos extremos*/
 
-    /*background-color: var(--beterraba);*/
     background:
     linear-gradient(rgba(123, 30, 60, 0.85), rgba(123, 30, 60, 0.85)),
-    url("../../assets/expoente-nuca-2025.jpeg");
+    url("../../assets/hospedagem-img.jpg");
 
     background-size: cover;
     background-position: center;
@@ -27,7 +26,7 @@
     padding-top: 2rem;
     color: white;
     font-size: 4rem;
-    width: 27rem;
+    width: 35rem;
 }
 
 #hero p {
@@ -38,38 +37,12 @@
     font-weight: 80;
 }
 
-.botao-hero {
-    display: inline-flex;
-    padding: 12px 35px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    border-radius: 10px;
-    background: white;
-    color: var(--beterraba);
-    font-weight: 600;
-    font-size: 20px;
-    transition: background-color 0.3s ease-in, color 0.3s ease-in, transform 0.3s ease-in;
-}
-
-.botao-hero a{
-    text-decoration: none;
-    color: inherit;
-    
-}
-
-.botao-hero:hover {
-    background: var(--beterraba-media);
-    color: white;
-    transform: scale(1.05);
-}
-/*.imagem-hero {
+.imagem-hero {
     width: 100%;
     max-width: 37rem;
     height: auto;
     object-fit: cover;
-}*/
+}
 
 
 @media only screen and (max-width: 1024px) {
@@ -77,9 +50,9 @@
         padding: 3rem 7rem;
     }
 
-    /*.imagem-hero {
+    .imagem-hero {
         display: none;
-    }*/
+    }
 
     #hero h1 {
         font-size: 3.5rem;
@@ -89,12 +62,6 @@
     #hero p {
         width: 100%;
         font-size: 18px;
-    }
-
-    .botao-hero {
-        margin-bottom: 4rem;
-        font-weight: 400;
-        font-size: 20px;
     }
 }
 

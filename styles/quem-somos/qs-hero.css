@@ -2,7 +2,8 @@
     margin-top: 5rem;
     width: 100%;
     padding: 13.3rem 8rem;
-    background-image: url("../../assets/bg-qs-hero-updated.svg");
+    /*background-image: url("../../assets/bg-qs-hero-updated.svg");*/
+    background-image: url("../../assets/qs-img.jpeg");
     background-position: left;
     background-repeat: no-repeat;
     background-size:cover;

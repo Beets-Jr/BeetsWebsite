@@ -8,16 +8,15 @@
     display: flex;
     align-content: space-between;
     justify-content: space-between; /* alinha os conteúdo aos extremos*/
-
-    /*background-color: var(--beterraba);*/
+    
     background:
     linear-gradient(rgba(123, 30, 60, 0.85), rgba(123, 30, 60, 0.85)),
-    url("../../assets/expoente-nuca-2025.jpeg");
+    url("../../assets/servicos-img.jpeg");
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
+    
     border-radius: 0.7rem; 
     padding: 5rem 8rem;
 }
@@ -56,7 +55,6 @@
 .botao-hero a{
     text-decoration: none;
     color: inherit;
-    
 }
 
 .botao-hero:hover {
@@ -64,12 +62,12 @@
     color: white;
     transform: scale(1.05);
 }
-/*.imagem-hero {
+.imagem-hero {
     width: 100%;
     max-width: 37rem;
     height: auto;
     object-fit: cover;
-}*/
+}
 
 
 @media only screen and (max-width: 1024px) {
@@ -77,9 +75,9 @@
         padding: 3rem 7rem;
     }
 
-    /*.imagem-hero {
+    .imagem-hero {
         display: none;
-    }*/
+    }
 
     #hero h1 {
         font-size: 3.5rem;

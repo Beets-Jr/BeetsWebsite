@@ -39,6 +39,10 @@ footer p {
     padding: 0.2rem;
 }
 
+#menu-footer ul {
+    list-style: none;
+}
+
 #menu-footer ul li a:hover{
     font-weight: 400;
 }
