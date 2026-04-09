@@ -1,6 +1,8 @@
 # Site da Beets Jr.
 Atualização e restruturação do site antigo. <br>
-Outubro, 2023 - Fevereiro, 2024
+Outubro, 2023 - Fevereiro, 2024 - Abril, 2026
+
+Teste pipeline :)
 
 ## Informações
 - Projeto desenvolvido:
