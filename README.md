@@ -2,7 +2,7 @@
 Atualização e restruturação do site antigo. <br>
 Outubro, 2023 - Fevereiro, 2024 - Abril, 2026
 
-Teste pipeline :)
+Teste pipeline :) - Abril, 2026
 
 ## Informações
 - Projeto desenvolvido:
